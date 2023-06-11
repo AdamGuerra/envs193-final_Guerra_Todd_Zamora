@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Problem 1
 
 #### Introduction
-Testing again uhhh
+
 
 #### Methods
 
@@ -29,10 +29,10 @@ Testing again uhhh
 ## Problem 2
 
 #### Introduction
-testing for merge conflict
+
 
 #### Methods
-testing knit
+
 
 #### Results
 
