@@ -9,8 +9,22 @@ output:
     toc_depth: 4
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Loading Packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(ggeffects)
+library(performance)
+library(naniar) 
+library(flextable) 
+library(car)
+library(broom)
+library(corrplot)
+library(AICcmodavg)
+library(GGally)
 ```
 
 
