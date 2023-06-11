@@ -6,7 +6,8 @@ output:
   html_document:
     toc: TRUE
     toc_float: TRUE
-    toc_depth: 4
+    toc_depth: 5
+    theme: sandstone
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -24,52 +25,150 @@ library(car)
 library(broom)
 library(corrplot)
 library(AICcmodavg)
+library(MASS)
+library(lme4)
+library(MuMIn)
+library(lmtest)
+library(DHARMa)
+library(ggeffects)
+library(lmtest)
+library(skimr)
 library(GGally)
+library(glmmTMB)
 ```
 
 
 ## Problem 1
 
-#### Introduction
+
+### Introduction
 
 
-#### Methods
+### Methods
 ```{r}
 # loading data
 kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',')
 ```
 
 
-#### Results
+### Results
 
 
+
+---
 
 ## Problem 2
 
-#### Introduction
+
+### Introduction
 
 
-#### Methods
+
+### Methods
+
+
+##### Loading Data
 ```{r}
 # loading data
-shrub_com <- read.csv(here("data/shrubstudy_community_flower_counts.csv"))
-shrub_ind <- read.csv(here("data/shrubstudy_individual_flower_counts.csv"))
-shrub_seed <-read.csv(here("data/shrubstudy_seed.csv"))
-shrub_pol <- read.csv(here("data/shrubstudy_pollinator.csv"))
+shrub_raw <- read.csv(here("data/shrubstudy_seed.csv"))
+
+shrub_seed <- read.csv(here("data/shrubstudy_seed.csv")) |> 
+              select(treatment, species, total_inf = total_nr_infl, num_seeds = nr_seeds) |> 
+              mutate(treatment = as.factor(treatment))
 ```
 
+##### Missing Data
+```{r}
+# visualize missing data
+gg_miss_var(shrub_seed)
+```
 
-
-#### Results
-
-
-
-
+```{r}
+skim(shrub_seed)
+```
 
 
 ```{r}
-
+# filter out missing data
+shrub_seed_sub <- shrub_seed |> 
+                  drop_na(num_seeds) 
 ```
+
+##### Correlation Plot
+```{r}
+# calc Pearson's r for numerical values
+shrub_seed_sub_cor <- shrub_seed_sub |> 
+                      select(3:4) |> 
+                      cor(method = "pearson")
+
+# plot correlation values
+corrplot(shrub_seed_sub_cor,
+         method = "ellipse",
+         addCoef.col = "black")
+```
+
+##### Variable Relationships
+```{r, warning=FALSE, message=FALSE}
+shrub_seed_sub |> 
+  select(!num_seeds) |> 
+  ggpairs()
+```
+
+**Question: How does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences? Is there a simpler model that explains seed count, and if so, what is it?**
+
+##### Build Models
+```{r}
+# linear model, we know this is wrong
+shrub_model1 <- lm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub)
+
+# generalized linear model with Poisson distribution
+shrub_model2 <- glm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "poisson")
+shrub_model2.a <- glm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "poisson")
+
+# generalized linear model with negative binomial distribution
+shrub_model3 <- glm.nb(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub)
+shrub_model3.a <- glmmTMB(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "nbinom2")
+
+# generalized linear model with Poisson distribution and random effect of treatment
+shrub_model4 <- glmer(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+                      data = shrub_seed_sub, family = "poisson")
+shrub_model4.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+                          data = shrub_seed_sub, family = "poisson")
+
+# generalized linear model with negative binomial distribution and random effect of site
+shrub_model5 <- glmer.nb(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+                      data = shrub_seed_sub)
+shrub_model5.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+                      data = shrub_seed_sub, family = "nbinom2")
+```
+
+```{r}
+# check diagnostics
+plot(simulateResiduals(shrub_model1)) # bad
+```
+```{r}
+plot(simulateResiduals(shrub_model2)) # bad
+```
+```{r}
+plot(simulateResiduals(shrub_model3)) # ok?
+```
+```{r}
+plot(simulateResiduals(shrub_model4)) # bad
+```
+```{r}
+plot(simulateResiduals(shrub_model5)) # ok?
+```
+
+##### Which distribution to use?
+```{r}
+MuMIn::model.sel(shrub_model1, shrub_model2, shrub_model3, shrub_model4, shrub_model5)
+```
+
+
+### Results
+
+
+
 
 
 
