@@ -1,0 +1,15 @@
+---
+title: "Final"
+author: "Adam Guerra, Luke Todd, Riley Zamora"
+date: "2023-06-11"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    toc_depth: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
