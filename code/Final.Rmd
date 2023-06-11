@@ -34,6 +34,10 @@ library(GGally)
 
 
 #### Methods
+```{r}
+# loading data
+kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',')
+```
 
 
 #### Results
@@ -46,7 +50,52 @@ library(GGally)
 
 
 #### Methods
+```{r}
+# loading data
+shrub_com <- read.csv(here("data/shrubstudy_community_flower_counts.csv"))
+shrub_ind <- read.csv(here("data/shrubstudy_individual_flower_counts.csv"))
+shrub_seed <-read.csv(here("data/shrubstudy_seed.csv"))
+shrub_pol <- read.csv(here("data/shrubstudy_pollinator.csv"))
+```
+
 
 
 #### Results
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
