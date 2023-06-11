@@ -4,4 +4,3 @@ Luke Todd
 Riley Zamora
 Adam Guerra
 
-typing anything, luke sucks
