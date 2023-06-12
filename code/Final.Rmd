@@ -45,11 +45,50 @@ library(glmmTMB)
 
 
 ### Methods
+
+##### Loading Data
 ```{r}
 # loading data
-kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',')
+kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',', header = TRUE)
 ```
 
+##### Missing Data
+```{r}
+gg_miss_var(kang_seed)
+```
+
+##### Skim
+```{r}
+skim(kang_seed)
+```
+
+##### Histogram of Counts
+```{r}
+ggplot(kang_seed, aes(x = seeds)) +
+  geom_histogram(bins = 17)
+```
+
+##### Correlation Plot ****************
+```{r}
+# calc Pearson's r for numerical values
+kang_seed_cor <- kang_seed |> 
+                      dplyr::select(1, 5) |> 
+                      cor(method = "pearson")
+
+# plot correlation values
+corrplot(kang_seed_cor,
+         method = "ellipse",
+         addCoef.col = "black")
+```
+
+##### Variable Relationships
+```{r, warning=FALSE, message=FALSE}
+kang_seed |> 
+  dplyr::select(!seeds) |> 
+  ggpairs()
+```
+
+**Question: How does total seed number differ between kangaroo rat mound locations?**
 
 ### Results
 
