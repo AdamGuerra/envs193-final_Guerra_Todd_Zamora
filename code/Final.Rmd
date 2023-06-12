@@ -72,8 +72,9 @@ kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',')
 # loading data
 shrub_raw <- read.csv(here("data/shrubstudy_seed.csv"))
 
-shrub_seed <- read.csv(here("data/shrubstudy_seed.csv")) |> 
-              select(treatment, species, total_inf = total_nr_infl, num_seeds = nr_seeds) |> 
+shrub_seed <- shrub_raw |>
+              dplyr::select(treatment, species, total_inf = total_nr_infl, 
+                      num_seeds = nr_seeds, shrub_num) |>
               mutate(treatment = as.factor(treatment))
 ```
 
@@ -83,22 +84,29 @@ shrub_seed <- read.csv(here("data/shrubstudy_seed.csv")) |>
 gg_miss_var(shrub_seed)
 ```
 
+##### Skim
 ```{r}
 skim(shrub_seed)
 ```
 
-
+##### Subset Dataset
 ```{r}
 # filter out missing data
 shrub_seed_sub <- shrub_seed |> 
                   drop_na(num_seeds) 
 ```
 
+##### Histogram of Counts
+```{r}
+ggplot(shrub_seed_sub, aes(x = num_seeds)) +
+  geom_histogram(bins = 17)
+```
+
 ##### Correlation Plot
 ```{r}
 # calc Pearson's r for numerical values
 shrub_seed_sub_cor <- shrub_seed_sub |> 
-                      select(3:4) |> 
+                      dplyr::select(3:4) |> 
                       cor(method = "pearson")
 
 # plot correlation values
@@ -110,14 +118,14 @@ corrplot(shrub_seed_sub_cor,
 ##### Variable Relationships
 ```{r, warning=FALSE, message=FALSE}
 shrub_seed_sub |> 
-  select(!num_seeds) |> 
+  dplyr::select(!num_seeds) |> 
   ggpairs()
 ```
 
 **Question: How does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences? Is there a simpler model that explains seed count, and if so, what is it?**
 
 ##### Build Models
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # linear model, we know this is wrong
 shrub_model1 <- lm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub)
 
@@ -130,17 +138,20 @@ shrub_model3 <- glm.nb(num_seeds ~ treatment + species + total_inf, data = shrub
 shrub_model3.a <- glmmTMB(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "nbinom2")
 
 # generalized linear model with Poisson distribution and random effect of treatment
-shrub_model4 <- glmer(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+shrub_model4 <- glmer(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
                       data = shrub_seed_sub, family = "poisson")
-shrub_model4.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+shrub_model4.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
                           data = shrub_seed_sub, family = "poisson")
 
-# generalized linear model with negative binomial distribution and random effect of site
-shrub_model5 <- glmer.nb(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+# generalized linear model with negative binomial distribution and random effect of treatment
+shrub_model5 <- glmer.nb(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
                       data = shrub_seed_sub)
-shrub_model5.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|treatment), 
+shrub_model5.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
                       data = shrub_seed_sub, family = "nbinom2")
 ```
+
+Because we are looking at count data, we know that the data is discrete and only has a lower bound. Knowing this, we built a couple different models using the Poisson and Negative Binomial distribution.
+
 
 ```{r}
 # check diagnostics
