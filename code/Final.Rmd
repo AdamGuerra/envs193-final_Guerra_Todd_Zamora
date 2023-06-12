@@ -175,6 +175,36 @@ plot(simulateResiduals(shrub_model5)) # ok?
 MuMIn::model.sel(shrub_model1, shrub_model2, shrub_model3, shrub_model4, shrub_model5)
 ```
 
+##### Model Summary
+```{r}
+# model object
+shrub_model3
+```
+```{r}
+# summary
+summary(shrub_model3)
+```
+
+```{r, warning=FALSE, message = FALSE}
+# confidence intervals
+confint(shrub_model3)
+```
+```{r, warning = FALSE}
+# adjusted R2
+r.squaredGLMM(shrub_model3)
+```
+```{r}
+# model object in table
+shrub_model3 |> 
+  as_flextable()
+```
+
+##### Visualizing
+```{r}
+
+```
+
+
 
 ### Results
 
