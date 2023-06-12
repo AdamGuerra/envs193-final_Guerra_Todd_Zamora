@@ -90,6 +90,33 @@ kang_seed |>
 
 **Question: How does total seed number differ between kangaroo rat mound locations?**
 
+##### Build Models
+```{r}
+# linear model, we know this is wrong
+shrub_model1 <- lm(seeds ~ treatment + species + total_inf, data = kang_seed)
+
+# generalized linear model with Poisson distribution
+shrub_model2 <- glm(seeds ~ treatment + species + total_inf, data = kang_seed, family = "poisson")
+shrub_model2.a <- glm(seeds ~ treatment + species + total_inf, data = kang_seed, family = "poisson")
+
+# generalized linear model with negative binomial distribution
+shrub_model3 <- glm.nb(seeds ~ treatment + species + total_inf, data = kang_seed)
+shrub_model3.a <- glmmTMB(seeds ~ treatment + species + total_inf, data = kang_seed, family = "nbinom2")
+
+# generalized linear model with Poisson distribution and random effect of treatment
+shrub_model4 <- glmer(seeds ~ treatment + species + total_inf + (1|shrub_num), 
+                      data = kang_seed, family = "poisson")
+shrub_model4.a <- glmmTMB(seeds ~ treatment + species + total_inf + (1|shrub_num), 
+                          data = kang_seed, family = "poisson")
+
+# generalized linear model with negative binomial distribution and random effect of treatment
+shrub_model5 <- glmer.nb(seeds ~ treatment + species + total_inf + (1|shrub_num), 
+                      data = kang_seed)
+shrub_model5.a <- glmmTMB(seeds ~ treatment + species + total_inf + (1|shrub_num), 
+                      data = kang_seed, family = "nbinom2")
+```
+
+
 ### Results
 
 
