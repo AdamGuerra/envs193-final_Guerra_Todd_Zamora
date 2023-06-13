@@ -187,34 +187,34 @@ Because we are looking at count data, we know that the data is discrete and only
 # check diagnostics
 simulationOutput_m1 <- simulateResiduals(shrub_model1)
 
-plot(simulationOutput_m1) # bad
+plot(simulationOutput_m1)
 testDispersion(simulationOutput_m1)
 ```
 ```{r}
 # check diagnostics
 simulationOutput_m2 <- simulateResiduals(shrub_model2)
 
-plot(simulationOutput_m2) # bad
+plot(simulationOutput_m2)
 testDispersion(simulationOutput_m2)
 ```
 ```{r}
 simulationOutput_m3 <- simulateResiduals(shrub_model3)
 
-plot(simulationOutput_m3) # bad
+plot(simulationOutput_m3)
 testDispersion(simulationOutput_m3)
 ```
 ```{r}
 # check diagnostics
 simulationOutput_m4 <- simulateResiduals(shrub_model4)
 
-plot(simulationOutput_m4) # bad
+plot(simulationOutput_m4)
 testDispersion(simulationOutput_m4)
 ```
 ```{r}
 # check diagnostics
 simulationOutput_m5 <- simulateResiduals(shrub_model5)
 
-plot(simulationOutput_m5) # bad
+plot(simulationOutput_m5)
 testDispersion(simulationOutput_m5)
 ```
 
