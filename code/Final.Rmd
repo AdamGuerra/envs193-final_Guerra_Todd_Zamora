@@ -39,6 +39,9 @@ library(glmmTMB)
 library(broom.mixed)
 library(effects)
 library(ggeffects)
+library(gridExtra)
+library(ggpubr)
+library(grid)
 ```
 
 
@@ -296,7 +299,7 @@ Because we are looking at count data, we know that the data is discrete and only
 
 <br>
 
-#### Model 1
+##### Model 1
 ```{r}
 # check diagnostics
 simulationOutput_m1 <- simulateResiduals(shrub_model1)
@@ -311,7 +314,7 @@ testZeroInflation(simulationOutput_m1)
 
 <br>
 
-#### Model 2
+##### Model 2
 ```{r}
 # check diagnostics
 simulationOutput_m2 <- simulateResiduals(shrub_model2)
@@ -326,7 +329,7 @@ testZeroInflation(simulationOutput_m2)
 
 <br>
 
-#### Model 3
+##### Model 3
 ```{r}
 simulationOutput_m3 <- simulateResiduals(shrub_model3)
 
@@ -340,7 +343,7 @@ testZeroInflation(simulationOutput_m3)
 
 <br>
 
-#### Model 4
+##### Model 4
 ```{r}
 # check diagnostics
 simulationOutput_m4 <- simulateResiduals(shrub_model4)
@@ -355,7 +358,7 @@ testZeroInflation(simulationOutput_m4)
 
 <br>
 
-#### Model 5
+##### Model 5
 ```{r}
 # check diagnostics
 simulationOutput_m5 <- simulateResiduals(shrub_model5)
@@ -370,7 +373,7 @@ testZeroInflation(simulationOutput_m5)
 
 <br>
 
-#### Breakdown of models 1-5:  
+##### Breakdown of models 1-5:  
 
 | Model | Formula | Distribution | QQ Plot Residuals | Residual vs. Predicted | Over/Under Dispersion | Zeros |
 |---|---|---|---|---|---|---|
@@ -385,7 +388,7 @@ Based on the tests above, it appears that either shrub_model3 or shrub_model5 wi
 
 <br>
 
-#### Model 6
+##### Model 6
 ```{r}
 # generalized linear model with negative binomial distribution
 shrub_model6 <- glmmTMB(num_seeds ~ treatment + species + total_inf, ziformula = ~1,
@@ -469,7 +472,7 @@ predictions <- ggpredict(shrub_model6, terms = c("treatment", "species", "total_
 # Plot showing seed differences by Species in the ACTUAL DATA
 ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
   geom_boxplot(aes(color = treatment), alpha = 0.5) +
-  facet_wrap(~ species, scales = "free_y") +
+  facet_wrap(~ species) +
   scale_fill_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
   scale_color_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
   theme_bw() +
@@ -477,7 +480,8 @@ ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
     x = "Species",
     y = "Number of Seeds",
     title = "Comparing Measured Number of Seeds per Species"
-  )
+  ) + 
+  coord_cartesian(ylim = c(0, 70))
 ```
 
 <br>
@@ -497,8 +501,9 @@ plot(pred) +
 
 <br>
 
-```{r, warning = FALSE, message = FALSE}
-ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
+```{r, warning = FALSE, message = FALSE, fig.width = 14}
+# Viz showing measured seed difference by plot type 
+plottype1 <- ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
   geom_boxplot(aes(color = treatment), alpha = 0.5) +
   scale_fill_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
   scale_color_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
@@ -508,65 +513,97 @@ ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
     y = "Number of Seeds",
     title = "Comparing Measured Number of Seeds per Species"
   ) + 
-  coord_cartesian(ylim = c(0, 40))
-```
+  coord_cartesian(ylim = c(0, 40)) + 
+  theme(legend.position = "none")
 
-<br>
-
-```{r}
 # Predictions
 pred2 <- ggpredict(shrub_model6, terms = "treatment", back.transform = TRUE)
 
-# Plot showing seed differences by Species      
-plot(pred2) +
+# Viz showing estimated seed difference by plot type     
+plottype2 <- plot(pred2) +
   labs(
     x = "Plot Type",
     y = "Number of Seeds",
     title = "Comparing Estimated Number of Seeds per Plot Type"
-  )
+  ) + 
+  coord_cartesian(ylim = c(0, 40))
+
+# making viz side by side
+plottype_fig <- ggarrange(plottype1 + rremove("xlab") + rremove('ylab'), 
+          plottype2 + rremove("xlab") + rremove('ylab'), 
+          ncol = 2,
+          labels = c('A.', 'B.', 'C.', 'D.', 'E.'), # adding figure labels in top left of plot
+          vjust = 5, # adjusting figure label position
+          hjust = -4)
+
+annotate_figure(plottype_fig,
+                left = textGrob("Number of Seeds", # add universal y-axis
+                        rot = 90, vjust = 0.5, # styling
+                        gp = gpar(cex = 1.3)),
+                bottom = textGrob("Plot Type",
+                        gp = gpar(cex = 1.3))) # handle graphical parameters
 ```
 
 <br>
 
-```{r}
-ggplot(shrub_seed_sub, aes(x = total_inf, y = num_seeds)) +
+```{r, fig.width = 14}
+inf1 <- ggplot(shrub_seed_sub, aes(x = total_inf, y = num_seeds)) +
   geom_point() +
   theme_bw() +
   labs(
-    x = "Number of Inflorescences",
+    x = "Number of inflorescences",
     y = "Number of Seeds",
-    title = "Comparing Measured Number of Seeds to Number of Inflorescences"
+    title = "Comparing Measured Number of Seeds to Number of inflorescences"
   ) + 
   coord_cartesian(xlim = c(0, 60),
                   ylim = c(0, 500))
-```
 
-<br>
-
-```{r}
 # Predictions
 pred3 <- ggpredict(shrub_model6, terms = "total_inf", back.transform = TRUE)
 
 # Plot showing seed differences by Species      
-plot(pred3) +
+inf2 <- plot(pred3) +
   labs(
-    x = "Number of Inflorescences",
+    x = "Number of inflorescences",
     y = "Number of Seeds",
-    title = "Comparing Estimated Number of Seeds to Number of Inflorescences"
+    title = "Comparing Estimated Number of Seeds to Number of inflorescences"
   ) + 
   coord_cartesian(xlim = c(0, 60),
                   ylim = c(0, 500))
+
+# making viz side by side
+inf_fig <- ggarrange(inf1 + rremove("xlab") + rremove('ylab'), 
+          inf2 + rremove("xlab") + rremove('ylab'), 
+          ncol = 2,
+          labels = c('A.', 'B.', 'C.', 'D.', 'E.'), # adding figure labels in top left of plot
+          vjust = 5, # adjusting figure label position
+          hjust = -4)
+
+annotate_figure(inf_fig,
+                left = textGrob("Number of Seeds", # add universal y-axis
+                        rot = 90, vjust = 0.5, # styling
+                        gp = gpar(cex = 1.3)),
+                bottom = textGrob("Number of inflorescences",
+                        gp = gpar(cex = 1.3))) # handle graphical parameters
 ```
 
 <br>
 
-To answer the question we are studying, **how does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences**, we need to look at the effects of each of the variables. The plots above shows that the number of seeds is generally higher in the open (control) plot. Additionally, the species AREFEN tends to have the highest number of seeds, whereas CARRUP appears to have the lowest amount of seeds. Lastly, the number of seeds increases as the number of total inflorescences increases.
+To answer the question we are studying, **how does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences**, we need to look at the effects of each of the variables.  
 
+The first pair of plots show that different species result in a wide variety in the seed count. In general, our model tends to underestimate the number of seeds for all of the species. However, it does correctly predict which species result in a larger number of seeds or a smaller number of seeds, which we believe to be the more valuable insight.  
 
+The second pair of plots show that the number of seeds is generally higher in the open (control) plot. It does this well, correctly predicting that the open plot typically has a higher number of seeds compared to the shrub plot.  
 
+Lastly, the third pair of plots show that the number of seeds increases as the number of total inflorescences increases. Because of the lack of samples with high inflorescences, the confidence interval grows significantly on the latter part of the plot. However, where we have a lot of data points, the model predicts the number of seeds very well.  
 
+<br>
 
+Now that we know how seed count varies with plot type, species, and total number of inflorescences, we will investigate to see if we can predict seed count with a simpler model.
 
+<br>
+
+#### Investigating a Simpler Model
 
 
 
