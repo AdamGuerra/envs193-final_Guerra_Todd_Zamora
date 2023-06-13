@@ -220,6 +220,7 @@ shrub_seed_sub |>
 
 **Question: How does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences? Is there a simpler model that explains seed count, and if so, what is it?**
 
+<br>
 
 #### Build Models
 ```{r, message=FALSE, warning=FALSE}
@@ -243,6 +244,9 @@ shrub_model5 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_n
 
 Because we are looking at count data, we know that the data is discrete and only has a lower bound. Knowing this, we built a couple different models using the Poisson and Negative Binomial distribution.
 
+<br>
+
+#### Model 1
 ```{r}
 # check diagnostics
 simulationOutput_m1 <- simulateResiduals(shrub_model1)
@@ -254,6 +258,10 @@ par(mfrow = c(1,2))
 testDispersion(simulationOutput_m1)
 testZeroInflation(simulationOutput_m1)
 ```
+
+<br>
+
+#### Model 2
 ```{r}
 # check diagnostics
 simulationOutput_m2 <- simulateResiduals(shrub_model2)
@@ -265,6 +273,10 @@ par(mfrow = c(1,2))
 testDispersion(simulationOutput_m2)
 testZeroInflation(simulationOutput_m2)
 ```
+
+<br>
+
+#### Model 3
 ```{r}
 simulationOutput_m3 <- simulateResiduals(shrub_model3)
 
@@ -275,6 +287,10 @@ par(mfrow = c(1,2))
 testDispersion(simulationOutput_m3)
 testZeroInflation(simulationOutput_m3)
 ```
+
+<br>
+
+#### Model 4
 ```{r}
 # check diagnostics
 simulationOutput_m4 <- simulateResiduals(shrub_model4)
@@ -286,6 +302,10 @@ par(mfrow = c(1,2))
 testDispersion(simulationOutput_m4)
 testZeroInflation(simulationOutput_m4)
 ```
+
+<br>
+
+#### Model 5
 ```{r}
 # check diagnostics
 simulationOutput_m5 <- simulateResiduals(shrub_model5)
@@ -298,7 +318,10 @@ testDispersion(simulationOutput_m5)
 testZeroInflation(simulationOutput_m5)
 ```
 
-Breakdown of models 1-5:  
+<br>
+
+#### Breakdown of models 1-5:  
+
 | Model | Formula | Distribution | QQ Plot Residuals | Residual vs. Predicted | Over/Under Dispersion | Zeros |
 |---|---|---|---|---|---|---|
 | shrub_model1 | num_seeds ~ treatment + species + total_inf | Normal | F | F | Under | Too many |
@@ -309,6 +332,10 @@ Breakdown of models 1-5:
 
 Based on the tests above, it appears that either shrub_model3 or shrub_model5 will be the best models because neither are over or under-dispered. However, they do still have some patterns in the residuals, and they appear to be zero-inflated. To further our model, we will create a new model with a zero-inflated term.
 
+
+<br>
+
+#### Model 6
 ```{r}
 # generalized linear model with negative binomial distribution
 shrub_model6 <- glmmTMB(num_seeds ~ treatment + species + total_inf, ziformula = ~1,
@@ -332,6 +359,7 @@ Based on the above plots, shrub_model6 appears to be our best model. There is no
 
 Moving forward, we will check AICC values to test whether our assumptions about the models are correct.
 
+<br>
 
 #### Which distribution to use?
 ```{r}
@@ -341,6 +369,8 @@ MuMIn::model.sel(shrub_model1, shrub_model2, shrub_model3, shrub_model4, shrub_m
 This chart confirms our assumptions about our models; shrub_model6 is best, followed by shrub_model3 and shrub_model5. We know this because of their respective AICC values of 1127.6, 1132.0, and 1133.9. In general, a lower AICC value equates to a better model.
 
 Next, we will look closer at our model: shrub_model6.
+
+<br>
 
 #### Model Summary
 ```{r}
@@ -359,8 +389,11 @@ confint(shrub_model6)
 r.squaredGLMM(shrub_model6)
 ```
 
+<br>
 
 ### Results
+
+<br>
 
 #### Table Format
 ```{r}
@@ -370,6 +403,8 @@ shrub_model6 |>
 ```
 
 The above displays what we studied earlier in the summary, just in an easier to digest format.
+
+<br>
 
 #### Visualization
 ```{r, message = FALSE, warning = FALSE}
