@@ -8,6 +8,7 @@ output:
     toc_float: TRUE
     toc_depth: 5
     theme: sandstone
+    code_folding: TRUE
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -51,7 +52,8 @@ library(broom.mixed)
 ```{r, warning = FALSE}
 # loading data
 kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',', header = TRUE) |> 
-             mutate(mnd = as.factor(mnd))
+             mutate(mnd = as.factor(mnd)) |> 
+             filter(!(species %in% c("soil", "plant", "dist", "litter", "gravel")))
 ```
 
 ##### Missing Data
@@ -80,13 +82,68 @@ ggplot(data = kang_seed, aes(x = mnd, y = seeds)) +
   theme_bw()
 ```
 
-**Question: How does total seed number differ between kangaroo rat mound locations?**
-
-##### Assumption Checks
 ```{r}
-#
+# set up data for bar graph
+kang_seed_bar <- kang_seed |> 
+                 group_by(mnd) |> 
+                 summarise(across(seeds, sum)) |> 
+                 ungroup()
+# bar graph
+ggplot() +
+  geom_bar(data = kang_seed_bar, aes(x = mnd, y = seeds, fill = mnd), 
+           stat = "identity", show.legend = F) +
+  theme_bw() +
+  labs(x = "Mound Number", y = "Number of Seeds", title = "Total Seed Count per Mound") 
 ```
 
+**Question: How does total seed number differ between kangaroo rat mound locations?**
+
+##### Choose Test  
+We will be performing an ANOVA test to determine if there is a difference in the total seed count between kangaroo rat mound locations.
+
+##### Set Up Hypothesis  
+$H_0:$ There is no significant difference in seed counts between the kangaroo rat mound locations.
+$H_a:$ There is a significant difference in seed counts between at least two of the kangaroo mound locations.
+
+##### Initial Assumption Checks
+```{r}
+# make aov object
+kang_aov <- aov(seeds ~ mnd, data = kang_seed)
+
+# get resiudals
+kang_res <- kang_aov$residuals
+
+# check normality
+qqPlot(kang_res)
+
+```
+
+The data does not appear to be normal, which we expceted because in the context reading they discussed how in their analysis the data was non-normal even after trying transformations. We decided to try a log transformation regaudless because this would be the logical next step in this analysis.
+
+```{r}
+# transform data
+kang_seed_log <- kang_seed |> 
+                 mutate(seeds = log(seeds + 1))
+
+# make new aov object
+kang_log_aov <- aov(seeds ~ mnd, data = kang_seed_log)
+
+# residuals
+kang_log_res <- kang_log_aov$residuals
+
+#test normality
+qqPlot(kang_log_res)
+```
+
+The data is still non-normal as expected (we mentionded above that the context paper mentioned how the data is not normal)
+
+
+```{r}
+# show aov summary
+summary(kang_aov)
+```
+
+The ANOVA p-value is greater than 0.05, meaning we fail to reject the null hypothesis that there is no significant difference in total seed count between different kangaroo rat mounds.
 
 ### Results
 
