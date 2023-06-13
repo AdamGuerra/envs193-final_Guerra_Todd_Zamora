@@ -184,13 +184,15 @@ After running the Kruskal-Wallis test, we reject the null hypothesis. (See resul
 
 ## Problem 2
 
+<br>
 
 ### Introduction
 
-
+<br>
 
 ### Methods
 
+<br>
 
 #### Loading Data
 ```{r}
@@ -203,16 +205,22 @@ shrub_seed <- shrub_raw |>
               mutate(treatment = as.factor(treatment))
 ```
 
+<br>
+
 #### Missing Data
 ```{r}
 # visualize missing data
 gg_miss_var(shrub_seed)
 ```
 
+<br>
+
 #### Skim
 ```{r}
 skim(shrub_seed)
 ```
+
+<br>
 
 #### Subset Dataset
 ```{r}
@@ -221,31 +229,44 @@ shrub_seed_sub <- shrub_seed |>
                   drop_na(num_seeds) 
 ```
 
+<br>
+
 #### Histogram of Counts
 ```{r}
 ggplot(shrub_seed_sub, aes(x = num_seeds)) +
   geom_histogram(bins = 17)
 ```
 
-#### Correlation Plot
-```{r}
-# calc Pearson's r for numerical values
-shrub_seed_sub_cor <- shrub_seed_sub |> 
-                      dplyr::select(3:4) |> 
-                      cor(method = "pearson")
+<br>
 
-# plot correlation values
-corrplot(shrub_seed_sub_cor,
-         method = "ellipse",
-         addCoef.col = "black")
+#### Histogram of Species
+```{r}
+ggplot(shrub_seed_sub, aes(x = species)) +
+  geom_bar(stat = 'count')
+```
+
+<br>
+
+One thing to note from this plot is that TRIDAS appears to only have one sample. Because of this, in the future, the predictions are likely to be all over the place and have a very large confidence interval. In order to increase the interpretability of the following plots, we will remove TRIDAS.
+
+<br>
+
+```{r}
+# filter out missing data
+shrub_seed_sub <- shrub_seed_sub |> 
+                  subset(species != "TRIDAS")
 ```
     
+<br>
+
 #### Variable Relationships
 ```{r, warning=FALSE, message=FALSE}
 shrub_seed_sub |> 
   dplyr::select(!num_seeds) |> 
   ggpairs()
 ```
+
+<br>
 
 **Question: How does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences? Is there a simpler model that explains seed count, and if so, what is it?**
 
@@ -436,8 +457,118 @@ The above displays what we studied earlier in the summary, just in an easier to 
 <br>
 
 #### Visualization
-```{r, message = FALSE, warning = FALSE}
-plot(allEffects(shrub_model6))
+
+<br>
+
+```{r, warning = FALSE, message = FALSE}
+# Compute predictions
+predictions <- ggpredict(shrub_model6, terms = c("treatment", "species", "total_inf"))
 ```
 
-To answer the question we are studying, **how does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences**, we need to look at the effects of each of the variables. This plot shows that the number of seeds is generally higher in the open (control) plot. Additionally, the species TRIDAS tends to have the highest number of seeds, whereas CARRUP appears to have the lowest amount of seeds. Lastly, the number of seeds increases as the number of total inflorescenses increases.
+```{r, warning = FALSE, message = FALSE}
+# Plot showing seed differences by Species in the ACTUAL DATA
+ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
+  geom_boxplot(aes(color = treatment), alpha = 0.5) +
+  facet_wrap(~ species, scales = "free_y") +
+  scale_fill_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
+  scale_color_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
+  theme_bw() +
+  labs(
+    x = "Species",
+    y = "Number of Seeds",
+    title = "Comparing Measured Number of Seeds per Species"
+  )
+```
+
+<br>
+
+```{r, warning = FALSE, message = FALSE}
+# Predictions
+pred <- ggpredict(shrub_model6, terms = "species", back.transform = TRUE)
+
+# Plot showing seed differences by Species      
+plot(pred) +
+  labs(
+    x = "Species",
+    y = "Number of Seeds",
+    title = "Comparing Estimated Number of Seeds per Species"
+  )
+```
+
+<br>
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(shrub_seed_sub, aes(x = treatment, y = num_seeds, fill = treatment)) +
+  geom_boxplot(aes(color = treatment), alpha = 0.5) +
+  scale_fill_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
+  scale_color_manual(values = c("control" = "lightblue", "shrub" = "salmon")) +
+  theme_bw() +
+  labs(
+    x = "Species",
+    y = "Number of Seeds",
+    title = "Comparing Measured Number of Seeds per Species"
+  ) + 
+  coord_cartesian(ylim = c(0, 40))
+```
+
+<br>
+
+```{r}
+# Predictions
+pred2 <- ggpredict(shrub_model6, terms = "treatment", back.transform = TRUE)
+
+# Plot showing seed differences by Species      
+plot(pred2) +
+  labs(
+    x = "Plot Type",
+    y = "Number of Seeds",
+    title = "Comparing Estimated Number of Seeds per Plot Type"
+  )
+```
+
+<br>
+
+```{r}
+ggplot(shrub_seed_sub, aes(x = total_inf, y = num_seeds)) +
+  geom_point() +
+  theme_bw() +
+  labs(
+    x = "Number of Inflorescences",
+    y = "Number of Seeds",
+    title = "Comparing Measured Number of Seeds to Number of Inflorescences"
+  ) + 
+  coord_cartesian(xlim = c(0, 60),
+                  ylim = c(0, 500))
+```
+
+<br>
+
+```{r}
+# Predictions
+pred3 <- ggpredict(shrub_model6, terms = "total_inf", back.transform = TRUE)
+
+# Plot showing seed differences by Species      
+plot(pred3) +
+  labs(
+    x = "Number of Inflorescences",
+    y = "Number of Seeds",
+    title = "Comparing Estimated Number of Seeds to Number of Inflorescences"
+  ) + 
+  coord_cartesian(xlim = c(0, 60),
+                  ylim = c(0, 500))
+```
+
+<br>
+
+To answer the question we are studying, **how does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences**, we need to look at the effects of each of the variables. The plots above shows that the number of seeds is generally higher in the open (control) plot. Additionally, the species AREFEN tends to have the highest number of seeds, whereas CARRUP appears to have the lowest amount of seeds. Lastly, the number of seeds increases as the number of total inflorescences increases.
+
+
+
+
+
+
+
+
+
+
+
