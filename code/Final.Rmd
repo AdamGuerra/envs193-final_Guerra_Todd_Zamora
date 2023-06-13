@@ -8,7 +8,7 @@ output:
     toc_float: TRUE
     toc_depth: 5
     theme: sandstone
-    code_folding: TRUE
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -37,6 +37,8 @@ library(skimr)
 library(GGally)
 library(glmmTMB)
 library(broom.mixed)
+library(effects)
+library(ggeffects)
 ```
 
 
@@ -48,7 +50,7 @@ library(broom.mixed)
 
 ### Methods
 
-##### Loading Data
+#### Loading Data
 ```{r, warning = FALSE}
 # loading data
 kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',', header = TRUE) |> 
@@ -56,17 +58,17 @@ kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',', 
              filter(!(species %in% c("soil", "plant", "dist", "litter", "gravel")))
 ```
 
-##### Missing Data
+#### Missing Data
 ```{r}
 gg_miss_var(kang_seed)
 ```
 
-##### Skim
+#### Skim
 ```{r}
 skim(kang_seed)
 ```
 
-##### Visualize Data
+#### Visualize Data
 ```{r}
 # visualize counts
 ggplot(kang_seed, aes(x = seeds)) +
@@ -98,14 +100,14 @@ ggplot() +
 
 **Question: How does total seed number differ between kangaroo rat mound locations?**
 
-##### Choose Test  
+#### Choose Test  
 We will be performing an ANOVA test to determine if there is a difference in the total seed count between kangaroo rat mound locations.
 
-##### Set Up Hypothesis  
+#### Set Up Hypothesis  
 $H_0:$ There is no significant difference in seed counts between the kangaroo rat mound locations.
 $H_a:$ There is a significant difference in seed counts between at least two of the kangaroo mound locations.
 
-##### Initial Assumption Checks
+#### Initial Assumption Checks
 ```{r}
 # make aov object
 kang_aov <- aov(seeds ~ mnd, data = kang_seed)
@@ -161,7 +163,7 @@ The ANOVA p-value is greater than 0.05, meaning we fail to reject the null hypot
 ### Methods
 
 
-##### Loading Data
+#### Loading Data
 ```{r}
 # loading data
 shrub_raw <- read.csv(here("data/shrubstudy_seed.csv"))
@@ -172,31 +174,31 @@ shrub_seed <- shrub_raw |>
               mutate(treatment = as.factor(treatment))
 ```
 
-##### Missing Data
+#### Missing Data
 ```{r}
 # visualize missing data
 gg_miss_var(shrub_seed)
 ```
 
-##### Skim
+#### Skim
 ```{r}
 skim(shrub_seed)
 ```
 
-##### Subset Dataset
+#### Subset Dataset
 ```{r}
 # filter out missing data
 shrub_seed_sub <- shrub_seed |> 
                   drop_na(num_seeds) 
 ```
 
-##### Histogram of Counts
+#### Histogram of Counts
 ```{r}
 ggplot(shrub_seed_sub, aes(x = num_seeds)) +
   geom_histogram(bins = 17)
 ```
 
-##### Correlation Plot
+#### Correlation Plot
 ```{r}
 # calc Pearson's r for numerical values
 shrub_seed_sub_cor <- shrub_seed_sub |> 
@@ -209,7 +211,7 @@ corrplot(shrub_seed_sub_cor,
          addCoef.col = "black")
 ```
     
-##### Variable Relationships
+#### Variable Relationships
 ```{r, warning=FALSE, message=FALSE}
 shrub_seed_sub |> 
   dplyr::select(!num_seeds) |> 
@@ -218,7 +220,8 @@ shrub_seed_sub |>
 
 **Question: How does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences? Is there a simpler model that explains seed count, and if so, what is it?**
 
-##### Build Models
+
+#### Build Models
 ```{r, message=FALSE, warning=FALSE}
 # linear model, we know this is wrong
 shrub_model1 <- lm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub)
@@ -245,102 +248,132 @@ Because we are looking at count data, we know that the data is discrete and only
 simulationOutput_m1 <- simulateResiduals(shrub_model1)
 
 plot(simulationOutput_m1)
+
+par(mfrow = c(1,2))
+
 testDispersion(simulationOutput_m1)
+testZeroInflation(simulationOutput_m1)
 ```
 ```{r}
 # check diagnostics
 simulationOutput_m2 <- simulateResiduals(shrub_model2)
 
 plot(simulationOutput_m2)
+
+par(mfrow = c(1,2))
+
 testDispersion(simulationOutput_m2)
+testZeroInflation(simulationOutput_m2)
 ```
 ```{r}
 simulationOutput_m3 <- simulateResiduals(shrub_model3)
 
 plot(simulationOutput_m3)
+
+par(mfrow = c(1,2))
+
 testDispersion(simulationOutput_m3)
+testZeroInflation(simulationOutput_m3)
 ```
 ```{r}
 # check diagnostics
 simulationOutput_m4 <- simulateResiduals(shrub_model4)
 
 plot(simulationOutput_m4)
+
+par(mfrow = c(1,2))
+
 testDispersion(simulationOutput_m4)
+testZeroInflation(simulationOutput_m4)
 ```
 ```{r}
 # check diagnostics
 simulationOutput_m5 <- simulateResiduals(shrub_model5)
 
 plot(simulationOutput_m5)
+
+par(mfrow = c(1,2))
+
 testDispersion(simulationOutput_m5)
+testZeroInflation(simulationOutput_m5)
 ```
 
-##### Which distribution to use?
+Breakdown of models 1-5:  
+| Model | Formula | Distribution | QQ Plot Residuals | Residual vs. Predicted | Over/Under Dispersion | Zeros |
+|---|---|---|---|---|---|---|
+| shrub_model1 | num_seeds ~ treatment + species + total_inf | Normal | F | F | Under | Too many |
+| shrub_model2 | num_seeds ~ treatment + species + total_inf | Poisson | F | F | Over | Too many |
+| shrub_model3 | num_seeds ~ treatment + species + total_inf | Negative Binomial | P | F | None | Too many |
+| shrub_model4 | num_seeds ~ treatment + species + total_inf + (1\|shrub_num) | Poisson | F | F | Over | Too many |
+| shrub_model5 | num_seeds ~ treatment + species + total_inf + (1\|shrub_num) | Negative Binomial | P | F | None | Too many |
+
+Based on the tests above, it appears that either shrub_model3 or shrub_model5 will be the best models because neither are over or under-dispered. However, they do still have some patterns in the residuals, and they appear to be zero-inflated. To further our model, we will create a new model with a zero-inflated term.
+
 ```{r}
-MuMIn::model.sel(shrub_model1, shrub_model2, shrub_model3, shrub_model4, shrub_model5)
+# generalized linear model with negative binomial distribution
+shrub_model6 <- glmmTMB(num_seeds ~ treatment + species + total_inf, ziformula = ~1,
+                        data = shrub_seed_sub, family = "nbinom2")
 ```
 
-##### Model Summary
+With the zero-inflated model created, we will now run the necessary diagnostics.
+
 ```{r}
-# model object
-shrub_model3
+# check diagnostics
+simulationOutput_m6 <- simulateResiduals(shrub_model6)
+
+plot(simulationOutput_m6)
+
+par(mfrow = c(1,2))
+
+testDispersion(simulationOutput_m6)
+testZeroInflation(simulationOutput_m6)
 ```
+Based on the above plots, shrub_model6 appears to be our best model. There is no over or underdispersion, and our distribution has about the same number of zeros as our model would predict. There is still some trend in our residuals, but it appears to have been lessened when compared to shrub_model3. We acknowledge this trend in residuals and have decided that isn't a big cause for concern since the other diagnostics were met.  
+
+Moving forward, we will check AICC values to test whether our assumptions about the models are correct.
+
+
+#### Which distribution to use?
+```{r}
+MuMIn::model.sel(shrub_model1, shrub_model2, shrub_model3, shrub_model4, shrub_model5, shrub_model6)
+```
+
+This chart confirms our assumptions about our models; shrub_model6 is best, followed by shrub_model3 and shrub_model5. We know this because of their respective AICC values of 1127.6, 1132.0, and 1133.9. In general, a lower AICC value equates to a better model.
+
+Next, we will look closer at our model: shrub_model6.
+
+#### Model Summary
 ```{r}
 # summary
-summary(shrub_model3)
+summary(shrub_model6)
 ```
+
+The summary of our model shows that treatmentshrub, speciesCARRUP, speciesMINOBT, speciesTRIDAS, and total_inf all appears to be significant indicators of total number of seeds.
 
 ```{r, warning=FALSE, message = FALSE}
 # confidence intervals
-confint(shrub_model3)
+confint(shrub_model6)
 ```
 ```{r, warning = FALSE}
 # adjusted R2
-r.squaredGLMM(shrub_model3)
+r.squaredGLMM(shrub_model6)
 ```
-```{r}
-# model object in table
-shrub_model3 |> 
-  as_flextable()
-```
-
-##### Visualizing
-```{r}
-
-```
-
 
 
 ### Results
 
+#### Table Format
+```{r}
+# model object in table
+shrub_model6 |> 
+  as_flextable()
+```
 
+The above displays what we studied earlier in the summary, just in an easier to digest format.
 
+#### Visualization
+```{r, message = FALSE, warning = FALSE}
+plot(allEffects(shrub_model6))
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+To answer the question we are studying, **how does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences**, we need to look at the effects of each of the variables. This plot shows that the number of seeds is generally higher in the open (control) plot. Additionally, the species TRIDAS tends to have the highest number of seeds, whereas CARRUP appears to have the lowest amount of seeds. Lastly, the number of seeds increases as the number of total inflorescenses increases.
