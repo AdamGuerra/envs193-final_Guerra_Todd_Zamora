@@ -228,7 +228,7 @@ The precise data follows:
 
 <br>
 
-In this study, we will investigate the questions: How does seed count vary with plot type (shrub or open), plant species, and total number of inflorescences, and is there a simpler model that explains seed count, and if so, what is it? 
+Northern peatlands, an important long-term sink of carbon, have recently been affected by drier conditions caused by climate change, leading to a phenomenon called "shrubification" (Moore). In arctic conditions, this shrubification affects "climates feedbacks including land surface albedo and enhanced evapotranspiriation" (Crump). This study makes use of Niwot Ridge data in Colorado to investigate the role of shrubification on plant reproductive success, determined through seed count, as well as the role other factors like species type or the total number of inflorescences (Seaver). This is an important subject to study because it can help see highlight the reproductive success of these shrubs, and it turn see if it will be of concern for albedo and evapotranspiration, which ultimately affects the health of the broader peatland ecosystem. We hypothesize that site type will not be a significant predictor of the measured number of seeds, but species type and total number of inflorescenes will be.
 
 ### Methods
 
@@ -238,7 +238,7 @@ In this study, we will investigate the questions: How does seed count vary with 
 
 <br>
 
-When loading the data, we only selected for treatment, species, total_inf, num_seeds, and shrub_num, since these are the only variables that we are interested in.
+When loading the data, we only selected for treatment, species, total_inf, num_seeds, and shrub_num, since these are the only variables that we are interested in. As mentioned in the introduction, this data was provided by Micaela M Seaver and the Niwot Ridge LTER.
 
 ```{r}
 # loading data
@@ -264,6 +264,10 @@ gg_miss_var(shrub_seed)
 
 <br>
 
+This plot shows us that there are a lot of missing values for the num_seeds variable. Moving forward, we will remove these missing values.
+
+<br>
+
 ##### Skim
 ```{r}
 skim(shrub_seed)
@@ -285,6 +289,10 @@ shrub_seed_sub <- shrub_seed |>
 ggplot(shrub_seed_sub, aes(x = num_seeds)) +
   geom_histogram(bins = 17)
 ```
+
+<br>
+
+This histogram shows us that our data includes a lot of zeros.
 
 <br>
 
@@ -325,7 +333,19 @@ shrub_seed_sub |>
 
 <br>
 
+$H0:$ Plot type, plant species, and total number of inflorescences has no effect on seed count.
+$H1:$ Plot type, plant species, and total number of inflorescences has a significant effect on seed count.
+
+<br>
+
 #### Build Models
+
+<br>
+
+In this section, we will be making use of the glmmTMB package to create generalized linear models, and the DHARMA package as a way to check the diagnostics of these models.
+
+<br>
+
 ```{r, message=FALSE, warning=FALSE}
 # simple models
 shrub_null <- lm(num_seeds ~ 1, data = shrub_seed_sub)
@@ -574,7 +594,7 @@ plot(pred) +
     x = "",
     y = "Number of Seeds",
     title = "Comparing Estimated Number of Seeds per Species",
-    caption = "Figure X: This figure compares the estimated number of seeds per species. The species AREFEN and
+    caption = "Figure 1: This figure compares the estimated number of seeds per species. The species AREFEN and
                 KOBMYO appears to have the highest number of seeds, whereas CARRUP appears to have 
                 the lowest number of seeds. The AREFEN species has largest spread, likely because it 
                 was the species with the least amount of samples. These estimated results are very 
@@ -629,7 +649,7 @@ annotate_figure(plottype_fig,
   labs(
     caption = "
     
-    Figure X: This figure shows the difference in the number of seeds per plot type, for both the
+    Figure 2: This figure shows the difference in the number of seeds per plot type, for both the
                 measured data, as well as the data estimated from our model. The model manages 
                 to predict which plot results in higher seed count, but it fails to capture the
                 variability." 
@@ -681,7 +701,7 @@ annotate_figure(inf_fig,
   labs(
     caption = "
     
-    Figure X: This figure shows how the number of seeds varies as the number of inflorescences
+    Figure 3: This figure shows how the number of seeds varies as the number of inflorescences
                 increases. The model appears to do a good job at predicting when you compare it
                 to the measured data." 
   ) +
@@ -694,11 +714,36 @@ To answer the question we are studying, **how does seed count vary with plot typ
 
 The first pair of plots show that different species result in a wide variety in the seed count. In general, our model tends to underestimate the number of seeds for all of the species. However, it does correctly predict which species result in a larger number of seeds or a smaller number of seeds, which we believe to be the more valuable insight.  
 
-The second pair of plots show that the number of seeds is generally higher in the open (control) plot. It does this well, correctly predicting that the open plot typically has a higher number of seeds compared to the shrub plot.  
+The second pair of plots show that the number of seeds is generally slightly higher in the open (control) plot. Referencing back to the flex table, we know that this is a significant difference in our model, despite being relatively small.
 
 Lastly, the third pair of plots show that the number of seeds increases as the number of total inflorescences increases. Because of the lack of samples with high inflorescences, the confidence interval grows significantly on the latter part of the plot. However, where we have a lot of data points, the model predicts the number of seeds very well.  
 
 <br>
+
+Referring back to what we saw in these visualizations and the flex table, we can see that all of the variables -- species, plot type, and the number of inflorescences -- ended up being significant predictors of the total number of seeds. In conclusion, our hypotheses about plot type was incorrect, but our hypotheses about species and number of inflorescences were correct.
+
+<br>
+
+## Bibliography
+
+#### Packages
+
+
+#### Problem 1
+
+
+#### Problem 2
+
+Crump, Sarah E. et al. “Arctic Shrub Colonization Lagged Peak Postglacial Warmth: Molecular Evidence in Lake Sediment from Arctic Canada.” Global change biology 25.12 (2019): 4244–4256. Web.  
+
+Moore, Paul A. et al. “Examining the Peatland Shrubification‐evapotranspiration Feedback Following Multi‐decadal Water Table Manipulation.” Hydrological processes 36.11 (2022): n. pag. Web.
+
+Seaver, M. 2022. Individual and community flowering phenology, seed counts and pollinator visitation rates in shrub and open plots across Niwot Ridge, 2019 - 2021. ver 1. Environmental Data Initiative. https://doi.org/10.6073/pasta/edc4ab2faf7dd96cd1deac1544d5f2b9 (Accessed 2023-06-13).
+
+
+
+
+
 
 
 
