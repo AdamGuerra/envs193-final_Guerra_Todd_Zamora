@@ -35,6 +35,7 @@ library(lmtest)
 library(skimr)
 library(GGally)
 library(glmmTMB)
+library(broom.mixed)
 ```
 
 
@@ -167,22 +168,16 @@ shrub_model1 <- lm(num_seeds ~ treatment + species + total_inf, data = shrub_see
 
 # generalized linear model with Poisson distribution
 shrub_model2 <- glm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "poisson")
-shrub_model2.a <- glm(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "poisson")
 
 # generalized linear model with negative binomial distribution
-shrub_model3 <- glm.nb(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub)
-shrub_model3.a <- glmmTMB(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "nbinom2")
+shrub_model3 <- glmmTMB(num_seeds ~ treatment + species + total_inf, data = shrub_seed_sub, family = "nbinom2")
 
 # generalized linear model with Poisson distribution and random effect of treatment
-shrub_model4 <- glmer(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
-                      data = shrub_seed_sub, family = "poisson")
-shrub_model4.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
+shrub_model4 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
                           data = shrub_seed_sub, family = "poisson")
 
 # generalized linear model with negative binomial distribution and random effect of treatment
-shrub_model5 <- glmer.nb(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
-                      data = shrub_seed_sub)
-shrub_model5.a <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
+shrub_model5 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
                       data = shrub_seed_sub, family = "nbinom2")
 ```
 
