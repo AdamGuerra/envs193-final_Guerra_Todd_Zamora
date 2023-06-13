@@ -69,7 +69,11 @@ kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',', 
 
 #### Missing Data
 ```{r}
-gg_miss_var(kang_seed)
+gg_miss_var(kang_seed) +
+  labs(caption = "Figure 1: Shows that there is no missing data in the dataset.",
+       title = "Missing Data Plot") +
+  theme_bw() +
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 <br>
@@ -83,34 +87,32 @@ skim(kang_seed)
 
 #### Visualize Data
 ```{r}
-# visualize counts
+# visualize counts of each number of seeds
 ggplot(kang_seed, aes(x = seeds)) +
-  geom_histogram(bins = 17)
+  geom_histogram(bins = 17) +
+  theme_bw() +
+  labs(title = "Count for Each Number of Seeds", caption = "Figure 2: Shows the spread of the data, a large portion of the dataset is zeros. 
+                This will impact whichever test we decide to run.") +
+  theme(plot.caption = element_text(hjust = 0))
 
-```
-
-```{r}
-#visualize using box plot
-ggplot(data = kang_seed, aes(x = mnd, y = seeds)) +
-  geom_boxplot() +
-  labs(x = "Mound Number", y = "NUmber of Seeds", title = "Boxplot of Seeds Found at Different Mounds", 
-       caption = "Figure 1: ") +
-  theme_bw()
 ```
 
 ```{r}
 # set up data for bar graph
 kang_seed_bar <- kang_seed |> 
-                 group_by(mnd) |> 
-                 summarise(across(seeds, sum)) |> 
-                 ungroup()
-# bar graph
+                 group_by(mnd) |> # group by mound
+                 summarise(across(seeds, sum)) |> # sum seed counts for each mound
+                 ungroup() # ungroup
+
+# bar graph of total seed counts
 ggplot() +
   geom_bar(data = kang_seed_bar, aes(x = mnd, y = seeds, fill = mnd), 
            stat = "identity", show.legend = F) +
   theme_bw() +
   labs(x = "Mound Number", y = "Number of Seeds", 
-       title = "Total Seed Count per Mound", caption = ) 
+       title = "Total Seed Count per Mound", caption = "Figure 3: Shows the total seed count for each mound location. There appear to 
+                be differences in at least two mounds' total seed counts.") +
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 <br>
@@ -120,7 +122,7 @@ ggplot() +
 <br>
 
 #### Choose an Initial Test  
-We will start by attempting to run an ANOVA test to determine if there is a difference in the total seed count between kangaroo rat mound locations.
+We will start by attempting to run an ANOVA test to determine if there is a difference in the total seed count between kangaroo rat mound locations. We chose this test to start because in the methods of the context paper they ran this test to compare the total seed counts.
 
 <br>
 
@@ -139,7 +141,7 @@ kang_aov <- aov(seeds ~ mnd, data = kang_seed)
 kang_res <- kang_aov$residuals
 
 # check normality
-qqPlot(kang_res)
+qqPlot(kang_res, xlab = "Norm Quantiles", ylab = "Seeds Residuals", main = "QQPlot to Check Seeds Normality")
 
 ```
 
@@ -157,7 +159,7 @@ kang_log_aov <- aov(seeds ~ mnd, data = kang_seed_log)
 kang_log_res <- kang_log_aov$residuals
 
 #test normality
-qqPlot(kang_log_res)
+qqPlot(kang_log_res, xlab = "Norm Quantiles", ylab = "Log(Seeds) Residuals", main = "QQPlot to Check Log(Seeds) Normality")
 ```
 
 The data is still non-normal as expected (we stated above that the context paper mentioned how the data is not normal after all transformations). 
