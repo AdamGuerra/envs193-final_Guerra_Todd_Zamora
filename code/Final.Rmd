@@ -111,7 +111,7 @@ shrub_raw <- read.csv(here("data/shrubstudy_seed.csv"))
 
 shrub_seed <- shrub_raw |>
               dplyr::select(treatment, species, total_inf = total_nr_infl, 
-                      num_seeds = nr_seeds, shrub_num) |>
+                      num_seeds = nr_seeds, shrub_num, plant_num = plant_nr) |>
               mutate(treatment = as.factor(treatment))
 ```
 
@@ -177,7 +177,7 @@ shrub_model4 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_n
                           data = shrub_seed_sub, family = "poisson")
 
 # generalized linear model with negative binomial distribution and random effect of treatment
-shrub_model5 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_num), 
+shrub_model5 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|plant_num), 
                       data = shrub_seed_sub, family = "nbinom2")
 ```
 
