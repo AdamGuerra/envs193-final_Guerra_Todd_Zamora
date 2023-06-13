@@ -8,6 +8,7 @@ output:
     toc_float: TRUE
     toc_depth: 5
     theme: sandstone
+    code_folding: TRUE
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -117,7 +118,7 @@ qqPlot(kang_res)
 
 ```
 
-The data does not appear to be normal, which we expceted because in the context reading they discussed how in their analysis the data was non-normal even after trying transformations. We decided to try a log transformation regaudless, for the sake of showing it in our project.
+The data does not appear to be normal, which we expceted because in the context reading they discussed how in their analysis the data was non-normal even after trying transformations. We decided to try a log transformation regaudless because this would be the logical next step in this analysis.
 
 ```{r}
 # transform data
@@ -148,7 +149,7 @@ After running the levenes test, we fail to reject the null hypothesis that the v
 summary(kang_aov)
 ```
 
-The ANOVA p-value is greater tan 0.05, meaning we fail to reject the null hypothesis that there is no significant difference in total seed count between different kangaroo rat mounds.
+The ANOVA p-value is greater than 0.05, meaning we fail to reject the null hypothesis that there is no significant difference in total seed count between different kangaroo rat mounds.
 
 ### Results
 
