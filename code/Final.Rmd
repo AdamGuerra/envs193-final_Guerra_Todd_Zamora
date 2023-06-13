@@ -151,7 +151,7 @@ corrplot(shrub_seed_sub_cor,
          method = "ellipse",
          addCoef.col = "black")
 ```
-
+    
 ##### Variable Relationships
 ```{r, warning=FALSE, message=FALSE}
 shrub_seed_sub |> 
