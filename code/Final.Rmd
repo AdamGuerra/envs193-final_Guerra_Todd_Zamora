@@ -135,14 +135,8 @@ kang_log_res <- kang_log_aov$residuals
 qqPlot(kang_log_res)
 ```
 
-The data is still non-normal as expected (we mentionded above that the context paper mentioned how the data is not normal), we will now test the variance of the un-transformed data.
+The data is still non-normal as expected (we mentionded above that the context paper mentioned how the data is not normal)
 
-```{r}
-# check variance using levenes test
-leveneTest(seeds ~ mnd, data = kang_seed)
-```
-
-After running the levenes test, we fail to reject the null hypothesis that the variances between groups are equal. Below we show the reuslts from the ANOVA test, we are still able to run it can handle non-normal data and we met the other assumptions.
 
 ```{r}
 # show aov summary
