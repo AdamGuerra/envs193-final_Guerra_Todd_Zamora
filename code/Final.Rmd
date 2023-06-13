@@ -74,7 +74,7 @@ ggplot(kang_seed, aes(x = seeds)) +
 ```{r}
 #visualize using box plot
 ggplot(data = kang_seed, aes(x = mnd, y = seeds)) +
-  geom_jitter() +
+  geom_boxplot() +
   labs(x = "Mound Number", y = "NUmber of Seeds", title = "Boxplot of Seeds Found at Different Mounds") +
   theme_bw()
 ```
