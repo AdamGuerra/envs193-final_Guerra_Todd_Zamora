@@ -111,7 +111,7 @@ shrub_raw <- read.csv(here("data/shrubstudy_seed.csv"))
 
 shrub_seed <- shrub_raw |>
               dplyr::select(treatment, species, total_inf = total_nr_infl, 
-                      num_seeds = nr_seeds, shrub_num) |>
+                      num_seeds = nr_seeds, shrub_num, plant_num = plant_nr, tag_num) |>
               mutate(treatment = as.factor(treatment))
 ```
 
@@ -183,22 +183,39 @@ shrub_model5 <- glmmTMB(num_seeds ~ treatment + species + total_inf + (1|shrub_n
 
 Because we are looking at count data, we know that the data is discrete and only has a lower bound. Knowing this, we built a couple different models using the Poisson and Negative Binomial distribution.
 
-
 ```{r}
 # check diagnostics
-plot(simulateResiduals(shrub_model1)) # bad
+simulationOutput_m1 <- simulateResiduals(shrub_model1)
+
+plot(simulationOutput_m1) # bad
+testDispersion(simulationOutput_m1)
 ```
 ```{r}
-plot(simulateResiduals(shrub_model2)) # bad
+# check diagnostics
+simulationOutput_m2 <- simulateResiduals(shrub_model2)
+
+plot(simulationOutput_m2) # bad
+testDispersion(simulationOutput_m2)
 ```
 ```{r}
-plot(simulateResiduals(shrub_model3)) # ok?
+simulationOutput_m3 <- simulateResiduals(shrub_model3)
+
+plot(simulationOutput_m3) # bad
+testDispersion(simulationOutput_m3)
 ```
 ```{r}
-plot(simulateResiduals(shrub_model4)) # bad
+# check diagnostics
+simulationOutput_m4 <- simulateResiduals(shrub_model4)
+
+plot(simulationOutput_m4) # bad
+testDispersion(simulationOutput_m4)
 ```
 ```{r}
-plot(simulateResiduals(shrub_model5)) # ok?
+# check diagnostics
+simulationOutput_m5 <- simulateResiduals(shrub_model5)
+
+plot(simulationOutput_m5) # bad
+testDispersion(simulationOutput_m5)
 ```
 
 ##### Which distribution to use?
