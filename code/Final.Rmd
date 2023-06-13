@@ -182,10 +182,41 @@ After running the Kruskal-Wallis test, we reject the null hypothesis. (See resul
 
 <br>
 
-### Results
+### Results  
+
+We used a Kruskal-Wallis test to answer the question, **How does the total seed number differ between kangaroo rat mound locations?** The test revealed a p-value of $0.04876$, on $9$ degrees of freedom which shows a significant difference in the median total seed number among at least two kangaroo rat mound locations. This difference in median values provides valuable insights into the total seed variation. The general null hypothesis of the Kruskal-Wallis assumes that there is no difference among the population medians of the groups being compared. Essentially, it tests whether the samples from different groups are likely to come from the same population or if there are systematic differences between the groups. We found that there are systematic differences between the mounds, which implies that the seeds observed in one mound are not randomly distributed among all the mounds but are tied specifically to the individual mound where they were counted.  
+
+This provides significant evidence that figure # (provided below) is an accurate way of visualizing the difference in total seed count between kangaroo rat mounds.  
+
+```{r}
+# bar graph
+ggplot() +
+  geom_bar(data = kang_seed_bar, aes(x = mnd, y = seeds, fill = mnd), 
+           stat = "identity", show.legend = F) +
+  theme_bw() +
+  labs(x = "Mound Number", y = "Number of Seeds", 
+       title = "Total Seed Count per Mound", caption =)
+```
+
+There is an apparent difference in total seed count between mounds shown in this bar plot. Mound 19 has less than 500 seeds while mound 27 has over 1500 total seeds. Mounds 6, 11, 25 have about 1200 seeds and 9 and 23 have around 750 seeds. There seem to similarities for subsets of mounds but as a general consensus there is a significant difference between in total seed number between kangaroo rat mounds.  
+
+The precise data follows:  
+
+|Mound Number|Number of Seeds|
+|:----------:|:------------:|
+|     6      |     1164     |
+|     9      |     739      |
+|     11     |     1181     |
+|     18     |     1407     |
+|     19     |     394      |
+|     23     |     752      |
+|     24     |     873      |
+|     25     |     1190     |
+|     27     |     1574     |
+|     29     |     1384     |
 
 
----
+---  
 
 ## Problem 2
 
