@@ -44,11 +44,15 @@ library(ggeffects)
 
 ## Problem 1
 
+<br>
 
 ### Introduction
 
+<br>
 
 ### Methods
+
+<br>
 
 #### Loading Data
 ```{r, warning = FALSE}
@@ -58,15 +62,21 @@ kang_seed <- read.table(here("data/sev208_kratseedbank_20120213.txt"), sep=',', 
              filter(!(species %in% c("soil", "plant", "dist", "litter", "gravel")))
 ```
 
+<br>
+
 #### Missing Data
 ```{r}
 gg_miss_var(kang_seed)
 ```
 
+<br>
+
 #### Skim
 ```{r}
 skim(kang_seed)
 ```
+
+<br>
 
 #### Visualize Data
 ```{r}
@@ -80,7 +90,8 @@ ggplot(kang_seed, aes(x = seeds)) +
 #visualize using box plot
 ggplot(data = kang_seed, aes(x = mnd, y = seeds)) +
   geom_boxplot() +
-  labs(x = "Mound Number", y = "NUmber of Seeds", title = "Boxplot of Seeds Found at Different Mounds") +
+  labs(x = "Mound Number", y = "NUmber of Seeds", title = "Boxplot of Seeds Found at Different Mounds", 
+       caption = "Figure 1: ") +
   theme_bw()
 ```
 
@@ -95,17 +106,26 @@ ggplot() +
   geom_bar(data = kang_seed_bar, aes(x = mnd, y = seeds, fill = mnd), 
            stat = "identity", show.legend = F) +
   theme_bw() +
-  labs(x = "Mound Number", y = "Number of Seeds", title = "Total Seed Count per Mound") 
+  labs(x = "Mound Number", y = "Number of Seeds", 
+       title = "Total Seed Count per Mound", caption = ) 
 ```
+
+<br>
 
 **Question: How does total seed number differ between kangaroo rat mound locations?**
 
-#### Choose Test  
-We will be performing an ANOVA test to determine if there is a difference in the total seed count between kangaroo rat mound locations.
+<br>
 
-#### Set Up Hypothesis  
-$H_0:$ There is no significant difference in seed counts between the kangaroo rat mound locations.
+#### Choose an Initial Test  
+We will start by attempting to run an ANOVA test to determine if there is a difference in the total seed count between kangaroo rat mound locations.
+
+<br>
+
+#### Set Up Initial Hypothesis for ANOVA
+$H_0:$ There is no significant difference in seed counts between the kangaroo rat mound locations.  
 $H_a:$ There is a significant difference in seed counts between at least two of the kangaroo mound locations.
+
+<br>
 
 #### Initial Assumption Checks
 ```{r}
@@ -120,7 +140,7 @@ qqPlot(kang_res)
 
 ```
 
-The data does not appear to be normal, which we expceted because in the context reading they discussed how in their analysis the data was non-normal even after trying transformations. We decided to try a log transformation regaudless because this would be the logical next step in this analysis.
+The data does not appear to be normal, which we expected because in the context reading they discussed how in their analysis the data was non-normal even after trying transformations. We decided to try a log transformation regardless because this would be the logical next step in this analysis.
 
 ```{r}
 # transform data
@@ -137,18 +157,27 @@ kang_log_res <- kang_log_aov$residuals
 qqPlot(kang_log_res)
 ```
 
-The data is still non-normal as expected (we mentionded above that the context paper mentioned how the data is not normal)
+The data is still non-normal as expected (we stated above that the context paper mentioned how the data is not normal after all transformations). 
 
+<br>
+
+#### Kruskal-Wallis Test
+
+Due to this we are going to run a Kruskal-Wallis test, for which we meet all assumptions (there are categorical predictor variables, there are independent samples, and each group has at least five observations) and works with count data. This will change our null and alternative hypothesis to be:  
+
+$H_0:$ There is no difference in the median total seed number between the kangaroo rat mound locations.    
+$H_a:$ There is a difference in at least two kangaroo rat mound locations median total seed number.
 
 ```{r}
 # show aov summary
-summary(kang_aov)
+kruskal.test(seeds ~ mnd, data = kang_seed)
 ```
 
-The ANOVA p-value is greater than 0.05, meaning we fail to reject the null hypothesis that there is no significant difference in total seed count between different kangaroo rat mounds.
+After running the Kruskal-Wallis test, we reject the null hypothesis. (See results).
+
+<br>
 
 ### Results
-
 
 
 ---
