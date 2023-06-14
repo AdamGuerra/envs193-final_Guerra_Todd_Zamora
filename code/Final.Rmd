@@ -42,6 +42,7 @@ library(ggeffects)
 library(gridExtra)
 library(ggpubr)
 library(grid)
+library(purrr)
 ```
 
 
@@ -727,10 +728,117 @@ Referring back to what we saw in these visualizations and the flex table, we can
 ## Bibliography
 
 #### Packages
+Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L,
+Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu
+V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal
+of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686
+<https://doi.org/10.21105/joss.01686>.
+
+Müller K (2020). _here: A Simpler Way to Find Your Files_. R package version 1.0.1,
+<https://CRAN.R-project.org/package=here>.
+
+Firke S (2021). _janitor: Simple Tools for Examining and Cleaning Dirty Data_. R package version
+2.1.0, <https://CRAN.R-project.org/package=janitor>.
+
+Lüdecke D (2018). “ggeffects: Tidy Data Frames of Marginal Effects from Regression Models.”
+_Journal of Open Source Software_, *3*(26), 772. doi:10.21105/joss.00772
+<https://doi.org/10.21105/joss.00772>.
+
+Lüdecke D, Ben-Shachar M, Patil I, Waggoner P, Makowski D (2021). “performance: An R Package for
+Assessment, Comparison and Testing of Statistical Models.” _Journal of Open Source Software_,
+*6*(60), 3139. doi:10.21105/joss.03139 <https://doi.org/10.21105/joss.03139>.
+
+Tierney N, Cook D (2023). “Expanding Tidy Data Principles to Facilitate Missing Data Exploration,
+Visualization and Assessment of Imputations.” _Journal of Statistical Software_, *105*(7), 1-31.
+doi:10.18637/jss.v105.i07 <https://doi.org/10.18637/jss.v105.i07>.
+
+Gohel D, Skintzos P (2023). _flextable: Functions for Tabular Reporting_. R package version
+0.9.1, <https://CRAN.R-project.org/package=flextable>.
+
+Fox J, Weisberg S (2019). _An R Companion to Applied Regression_, Third edition. Sage, Thousand
+Oaks CA. <https://socialsciences.mcmaster.ca/jfox/Books/Companion/>.
+
+Robinson D, Hayes A, Couch S (2022). _broom: Convert Statistical Objects into Tidy Tibbles_. R
+package version 1.0.1, <https://CRAN.R-project.org/package=broom>.
+
+Wei T, Simko V (2021). _R package 'corrplot': Visualization of a Correlation Matrix_. (Version
+0.92), <https://github.com/taiyun/corrplot>.
+
+Mazerolle MJ (2023). _AICcmodavg: Model selection and multimodel inference based on (Q)AIC(c)_. R
+package version 2.3.2, <https://cran.r-project.org/package=AICcmodavg>.
+
+Venables WN, Ripley BD (2002). _Modern Applied Statistics with S_, Fourth edition. Springer, New
+York. ISBN 0-387-95457-0, <https://www.stats.ox.ac.uk/pub/MASS4/>.
+
+Bates D, Mächler M, Bolker B, Walker S (2015). “Fitting Linear Mixed-Effects Models Using lme4.”
+_Journal of Statistical Software_, *67*(1), 1-48. doi:10.18637/jss.v067.i01
+<https://doi.org/10.18637/jss.v067.i01>.
+
+Bartoń K (2023). _MuMIn: Multi-Model Inference_. R package version 1.47.5,
+<https://CRAN.R-project.org/package=MuMIn>.
+
+Zeileis A, Hothorn T (2002). “Diagnostic Checking in Regression Relationships.” _R News_, *2*(3),
+7-10. <https://CRAN.R-project.org/doc/Rnews/>.
+
+Hartig F (2022). _DHARMa: Residual Diagnostics for Hierarchical (Multi-Level / Mixed) Regression
+Models_. R package version 0.4.6, <https://CRAN.R-project.org/package=DHARMa>.
+
+Lüdecke D (2018). “ggeffects: Tidy Data Frames of Marginal Effects from Regression Models.”
+_Journal of Open Source Software_, *3*(26), 772. doi:10.21105/joss.00772
+<https://doi.org/10.21105/joss.00772>.
+
+Zeileis A, Hothorn T (2002). “Diagnostic Checking in Regression Relationships.” _R News_, *2*(3),
+7-10. <https://CRAN.R-project.org/doc/Rnews/>.
+
+Waring E, Quinn M, McNamara A, Arino de la Rubia E, Zhu H, Ellis S (2022). _skimr: Compact and
+Flexible Summaries of Data_. R package version 2.1.5, <https://CRAN.R-project.org/package=skimr>.
+
+Schloerke B, Cook D, Larmarange J, Briatte F, Marbach M, Thoen E, Elberg A, Crowley J (2021).
+_GGally: Extension to 'ggplot2'_. R package version 2.1.2,
+<https://CRAN.R-project.org/package=GGally>.
+
+Brooks ME, Kristensen K, van Benthem KJ, Magnusson A, Berg CW, Nielsen A, Skaug HJ, Maechler M,
+Bolker BM (2017). “glmmTMB Balances Speed and Flexibility Among Packages for Zero-inflated
+Generalized Linear Mixed Modeling.” _The R Journal_, *9*(2), 378-400. doi:10.32614/RJ-2017-066
+<https://doi.org/10.32614/RJ-2017-066>.
+
+Bolker B, Robinson D (2022). _broom.mixed: Tidying Methods for Mixed Models_. R package version
+0.2.9.4, <https://CRAN.R-project.org/package=broom.mixed>.
+
+Fox J, Weisberg S (2019). _An R Companion to Applied Regression_, 3rd edition. Sage, Thousand
+Oaks CA. <https://socialsciences.mcmaster.ca/jfox/Books/Companion/index.html>.
+
+Fox J, Weisberg S (2018). “Visualizing Fit and Lack of Fit in Complex Regression Models with
+Predictor Effect Plots and Partial Residuals.” _Journal of Statistical Software_, *87*(9), 1-27.
+doi:10.18637/jss.v087.i09 <https://doi.org/10.18637/jss.v087.i09>.
+
+Fox J (2003). “Effect Displays in R for Generalised Linear Models.” _Journal of Statistical
+Software_, *8*(15), 1-27. doi:10.18637/jss.v008.i15 <https://doi.org/10.18637/jss.v008.i15>.
+
+Fox J, Hong J (2009). “Effect Displays in R for Multinomial and Proportional-Odds Logit Models:
+Extensions to the effects Package.” _Journal of Statistical Software_, *32*(1), 1-24.
+doi:10.18637/jss.v032.i01 <https://doi.org/10.18637/jss.v032.i01>.
+
+Lüdecke D (2018). “ggeffects: Tidy Data Frames of Marginal Effects from Regression Models.”
+_Journal of Open Source Software_, *3*(26), 772. doi:10.21105/joss.00772
+<https://doi.org/10.21105/joss.00772>.
+
+Kassambara A (2023). _ggpubr: 'ggplot2' Based Publication Ready Plots_. R package version 0.6.0,
+<https://CRAN.R-project.org/package=ggpubr>.
+
+R Core Team (2022). _R: A Language and Environment for Statistical Computing_. R Foundation for
+Statistical Computing, Vienna, Austria. <https://www.R-project.org/>.
+
+Wickham H, Henry L (2023). _purrr: Functional Programming Tools_. R package version 1.0.1,
+<https://CRAN.R-project.org/package=purrr>.
 
 
 #### Problem 1
+Koontz, T. and H. Simpson. 2013. Effects of Kangaroo Rat Mounds on Seed Banks of Grass and Shrublands at the Sevilleta National Wildlife Refuge, New Mexico (2001) ver 102459. Environmental Data Initiative. https://doi.org/10.6073/pasta/115b8095a5e82028869a8c56eff14597 (Accessed 2023-06-12).
 
+Terri L. Koontz, Heather L. Simpson,
+The composition of seed banks on kangaroo rat (Dipodomys spectabilis) mounds in a Chihuahuan Desert grassland,
+Journal of Arid Environments,Volume 74, Issue 10,2010,Pages 1156-1161,ISSN 0140-1963,https://doi.org/10.1016/j.jaridenv.2010.03.008.(https://www.sciencedirect.com/science/article/pii/S0140196310000881)
 
 #### Problem 2
 
