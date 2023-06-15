@@ -10,4 +10,4 @@ Luke Todd
 Riley Zamora  
 Adam Guerra  
 
-(Link to Knitted HTML)[/code/Final.html]
+[Link to Knitted HTML](/code/Final.html)
