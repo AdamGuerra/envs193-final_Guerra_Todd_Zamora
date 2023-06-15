@@ -50,7 +50,9 @@ library(purrr)
 
 <br>
 
-### Introduction
+### Introduction  
+
+Understanding soil disturbance is an overlooked aspect of plant community structure (Terri). Kangaroo Rat mounds in particular cause both physical and nitrate changes in soil (Hyeong-Tae). These changes create microhabitats, house rare species for their respective areas, and cause changes in seed banks (Gao). In this analysis we are focusing on seed counts due to their importance in regards to species persistence in unpredictable environments (Terri). Specifically, how seed counts vary between different mound locations.
 
 <br>
 
@@ -834,11 +836,16 @@ Wickham H, Henry L (2023). _purrr: Functional Programming Tools_. R package vers
 
 
 #### Problem 1
-Koontz, T. and H. Simpson. 2013. Effects of Kangaroo Rat Mounds on Seed Banks of Grass and Shrublands at the Sevilleta National Wildlife Refuge, New Mexico (2001) ver 102459. Environmental Data Initiative. https://doi.org/10.6073/pasta/115b8095a5e82028869a8c56eff14597 (Accessed 2023-06-12).
+
+Guo, Q. Effects of bannertail kangaroo rat mounds on small-scale plant community structure. Oecologia 106, 247–256 (1996). https://doi.org/10.1007/BF00328605
+
+Hyeong-Tae Mun, Walter G. Whitford,
+Factors affecting annual plants assemblages on banner-tailed kangaroo rat mounds,Journal of Arid Environments,Volume 18, Issue 2,1990,Pages 165-173,ISSN 0140-1963, https://doi.org/10.1016/S0140-1963(18)30850-4.(https://www.sciencedirect.com/science/article/pii/S0140196318308504)
 
 Terri L. Koontz, Heather L. Simpson,
 The composition of seed banks on kangaroo rat (Dipodomys spectabilis) mounds in a Chihuahuan Desert grassland,
 Journal of Arid Environments,Volume 74, Issue 10,2010,Pages 1156-1161,ISSN 0140-1963,https://doi.org/10.1016/j.jaridenv.2010.03.008.(https://www.sciencedirect.com/science/article/pii/S0140196310000881)
+
 
 #### Problem 2
 
